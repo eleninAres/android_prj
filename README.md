@@ -65,6 +65,7 @@
   - 变更说明
   - 可复制的“示例代码片段”
   - “运行检查”按钮与结果输出区
+- 16F 页面已加入**真实预测性返回回调适配**（`OnBackInvokedCallback` + 低版本回退）
 
 对应代码目录：
 - `app/src/main/java/com/example/os17demo/os16cases/`
