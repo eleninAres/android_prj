@@ -1,6 +1,6 @@
 # android_prj
 
-这是一个用于演示 **Android 17 行为变更适配** 的最小 Android App Demo。
+这是一个用于演示 **Android 16 / 17 行为变更适配** 的最小 Android App Demo。
 
 ## 目录
 
@@ -14,7 +14,7 @@
 ## 如何运行
 
 1. 用 Android Studio 打开项目根目录。
-2. 安装 Android 17 对应 SDK（并根据本地环境调整 `compileSdk/targetSdk`）。
+2. 安装 Android 16/17 对应 SDK（并根据本地环境调整 `compileSdk/targetSdk`）。
 3. 同步 Gradle 并运行 `app` 模块。
 
 > 说明：这是行为变更适配示例工程，重点在“怎么改”，不是完整业务 App。
@@ -55,3 +55,50 @@
 - [x] 默认启用 CT
 - [x] 更安全的原生 DCL
 - [x] 大屏忽略方向/尺寸/宽高比限制
+
+## Android 16 变更 Demo（新增）
+
+### 已新增按钮示例（16A ~ 16M）
+
+- 16A) Job/调度行为变更（配额+空作业+固定频率）
+- 16B) 有序广播优先级范围不再全局
+- 16C) ART 内部变更与非 SDK 访问治理
+- 16D) 16KB 页面大小兼容模式
+- 16E) 无障碍公告弃用
+- 16F) 预测性返回/三按钮返回迁移
+- 16G) 无边框与大屏自适应布局
+- 16H) themed icon 与 elegantTextHeight 变更
+- 16I) Intent 安全、MediaStore 版本锁定、GPU 过滤
+- 16J) 蓝牙绑定丢失、超时与 removeBond API
+- 16K) 健康权限与本地网络权限
+- 16L) 应用拥有的照片（受限媒体访问）
+- 16M) 虚拟设备所有者替换项
+
+### behavior-changes-all（Android 16）
+- [x] JobScheduler 配额优化（16A）
+- [x] 已放弃空作业 stop reason（16A）
+- [x] 有序广播优先级范围不再全局（16B）
+- [x] ART 内部变更（16C）
+- [x] 16KB 页面大小兼容模式（16D）
+- [x] 弃用干扰性无障碍公告（16E）
+- [x] 三按钮导航预测性返回（16F）
+- [x] 自动带主题应用图标（16H）
+- [x] 虚拟设备所有者替换项（16M）
+- [x] Intent 重定向攻击防护增强（16I）
+- [x] 配套设备发现超时通知行为变更（16J）
+- [x] 债券/绑定丢失处理改进（16J）
+
+### behavior-changes-16（targetSdk 对应 Android 16 / API 36）
+- [x] edge-to-edge 选择停用功能停用（16G）
+- [x] 预测性返回迁移或临时停用（16F）
+- [x] elegantTextHeight 弃用停用（16H）
+- [x] scheduleAtFixedRate 行为优化（16A）
+- [x] 自适应布局（16G）
+- [x] 健康与健身权限细粒度化（16K）
+- [x] 蓝牙绑定丢失/加密变更新 intent（16J）
+- [x] CompanionDeviceManager.removeBond API（16J）
+- [x] MediaStore 版本锁定（16I）
+- [x] 更安全的 intent（16I）
+- [x] GPU 系统调用过滤（16I）
+- [x] 本地网络权限（16K）
+- [x] 应用拥有的照片（16L）
