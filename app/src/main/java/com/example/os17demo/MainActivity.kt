@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.security.NetworkSecurityPolicy
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -71,16 +72,18 @@ class MainActivity : AppCompatActivity() {
 
         addDemoButton(container, "1) MessageQueue 无锁实现") { demoMessageQueue() }
         addDemoButton(container, "2) static final 不可修改") { demoStaticFinal() }
-        addDemoButton(container, "3) BAL 强化（后台启动 Activity）") { demoBal() }
-        addDemoButton(container, "4) Loopback 权限 USE_LOOPBACK_INTERFACE") { demoLoopbackPermission() }
-        addDemoButton(container, "5) 默认启用 CT（证书透明度）") { demoCtDefault() }
-        addDemoButton(container, "6) 原生 DCL 更严格（System.load）") { demoSaferNativeDcl() }
-        addDemoButton(container, "7) 大屏约束被忽略（sw>=600dp）") { demoLargeScreenBehavior() }
-        addDemoButton(container, "8) URI 显式授权示例（面向 Android 18 提前适配）") { demoUriGrant() }
-        addDemoButton(container, "9) Keystore key 数量限制") { demoKeystoreLimitHandling() }
-        addDemoButton(container, "10) IME 旋转后可见性恢复") { demoImeVisibility() }
-        addDemoButton(container, "11) Pointer Capture 触控板相对事件") { demoPointerCapture() }
-        addDemoButton(container, "12) 后台音频强化") { demoBackgroundAudioHardening() }
+        addDemoButton(container, "3) 复杂 IME 实体键盘输入的无障碍支持") { demoA11yImePhysicalKeyboard() }
+        addDemoButton(container, "4) BAL 强化（后台启动 Activity）") { demoBal() }
+        addDemoButton(container, "5) Loopback 权限 USE_LOOPBACK_INTERFACE") { demoLoopbackPermission() }
+        addDemoButton(container, "6) 默认启用 CT（证书透明度）") { demoCtDefault() }
+        addDemoButton(container, "7) 原生 DCL 更严格（System.load）") { demoSaferNativeDcl() }
+        addDemoButton(container, "8) 大屏约束被忽略（sw>=600dp）") { demoLargeScreenBehavior() }
+        addDemoButton(container, "9) usesCleartextTraffic 弃用计划") { demoUsesCleartextDeprecation() }
+        addDemoButton(container, "10) URI 显式授权示例（面向 Android 18 提前适配）") { demoUriGrant() }
+        addDemoButton(container, "11) Keystore key 数量限制") { demoKeystoreLimitHandling() }
+        addDemoButton(container, "12) IME 旋转后可见性恢复") { demoImeVisibility() }
+        addDemoButton(container, "13) Pointer Capture 触控板相对事件") { demoPointerCapture() }
+        addDemoButton(container, "14) 后台音频强化") { demoBackgroundAudioHardening() }
         addDemoButton(container, "清空输出") { outputView.text = "" }
 
         outputView = TextView(this).apply {
@@ -172,6 +175,30 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun demoA11yImePhysicalKeyboard() {
+        val textAttributeClass = runCatching {
+            Class.forName("android.view.inputmethod.TextAttribute")
+        }.getOrNull()
+        val builderMethod = runCatching {
+            Class.forName("android.view.inputmethod.TextAttribute\$Builder")
+                .getMethod("setTextSuggestionSelected", Boolean::class.javaPrimitiveType)
+        }.getOrNull()
+        val textChangeTypesMethod = runCatching {
+            Class.forName("android.view.accessibility.AccessibilityEvent")
+                .getMethod("setTextChangeTypes", Int::class.javaPrimitiveType)
+        }.getOrNull()
+
+        appendLine(
+            buildString {
+                append("TextAttribute 类可用: ${textAttributeClass != null}\n")
+                append("TextAttribute.Builder.setTextSuggestionSelected 可用: ${builderMethod != null}\n")
+                append("AccessibilityEvent.setTextChangeTypes 可用: ${textChangeTypesMethod != null}\n")
+                append("适配建议：输入法应用与无障碍服务应读取/上报文本变更类型；")
+                append("普通应用优先使用标准 TextView/EditText 组件以自动获得兼容性。")
+            },
+        )
+    }
+
     private fun demoLoopbackPermission() {
         val permission = "android.permission.USE_LOOPBACK_INTERFACE"
         val granted = packageManager.checkPermission(permission, packageName) == PackageManager.PERMISSION_GRANTED
@@ -222,6 +249,23 @@ class MainActivity : AppCompatActivity() {
                 append("当前设备 smallestScreenWidthDp = $swDp\n")
                 append("当 sw>=600dp 且 target Android 17 时，方向/尺寸/宽高比限制可能被系统忽略。\n")
                 append("请改为响应式布局，不依赖锁定方向与比例。")
+            },
+        )
+    }
+
+    private fun demoUsesCleartextDeprecation() {
+        val policy = NetworkSecurityPolicy.getInstance()
+        val appPermitted = policy.isCleartextTrafficPermitted
+        val examplePermitted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            policy.isCleartextTrafficPermitted("example.com")
+        } else {
+            appPermitted
+        }
+        appendLine(
+            buildString {
+                append("全局明文流量允许: $appPermitted\n")
+                append("example.com 明文流量允许: $examplePermitted\n")
+                append("适配建议：逐步弃用 usesCleartextTraffic，改用 network_security_config 按域名精细配置。")
             },
         )
     }
