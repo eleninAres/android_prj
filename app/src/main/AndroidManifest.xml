@@ -14,6 +14,19 @@
         android:roundIcon="@android:drawable/sym_def_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.Os17Demo">
+        <activity android:name=".os16cases.Os16CaseMActivity" />
+        <activity android:name=".os16cases.Os16CaseLActivity" />
+        <activity android:name=".os16cases.Os16CaseKActivity" />
+        <activity android:name=".os16cases.Os16CaseJActivity" />
+        <activity android:name=".os16cases.Os16CaseIActivity" />
+        <activity android:name=".os16cases.Os16CaseHActivity" />
+        <activity android:name=".os16cases.Os16CaseGActivity" />
+        <activity android:name=".os16cases.Os16CaseFActivity" />
+        <activity android:name=".os16cases.Os16CaseEActivity" />
+        <activity android:name=".os16cases.Os16CaseDActivity" />
+        <activity android:name=".os16cases.Os16CaseCActivity" />
+        <activity android:name=".os16cases.Os16CaseBActivity" />
+        <activity android:name=".os16cases.Os16CaseAActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -60,19 +60,16 @@
 
 ### 已新增按钮示例（16A ~ 16M）
 
-- 16A) Job/调度行为变更（配额+空作业+固定频率）
-- 16B) 有序广播优先级范围不再全局
-- 16C) ART 内部变更与非 SDK 访问治理
-- 16D) 16KB 页面大小兼容模式
-- 16E) 无障碍公告弃用
-- 16F) 预测性返回/三按钮返回迁移
-- 16G) 无边框与大屏自适应布局
-- 16H) themed icon 与 elegantTextHeight 变更
-- 16I) Intent 安全、MediaStore 版本锁定、GPU 过滤
-- 16J) 蓝牙绑定丢失、超时与 removeBond API
-- 16K) 健康权限与本地网络权限
-- 16L) 应用拥有的照片（受限媒体访问）
-- 16M) 虚拟设备所有者替换项
+- 16A~16M 已拆分为 **独立 Activity**
+- 每个 Activity 页面都包含：
+  - 变更说明
+  - 可复制的“示例代码片段”
+  - “运行检查”按钮与结果输出区
+
+对应代码目录：
+- `app/src/main/java/com/example/os17demo/os16cases/`
+  - `Os16CaseBaseActivity.kt`
+  - `Os16CaseAActivity.kt` ~ `Os16CaseMActivity.kt`
 
 ### behavior-changes-all（Android 16）
 - [x] JobScheduler 配额优化（16A）

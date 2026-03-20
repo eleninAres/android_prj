@@ -1,6 +1,5 @@
 package com.example.os17demo
 
-import android.Manifest
 import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,12 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.provider.MediaStore
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.security.NetworkSecurityPolicy
-import android.system.Os
-import android.system.OsConstants
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +24,19 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.os17demo.os16cases.Os16CaseAActivity
+import com.example.os17demo.os16cases.Os16CaseBActivity
+import com.example.os17demo.os16cases.Os16CaseCActivity
+import com.example.os17demo.os16cases.Os16CaseDActivity
+import com.example.os17demo.os16cases.Os16CaseEActivity
+import com.example.os17demo.os16cases.Os16CaseFActivity
+import com.example.os17demo.os16cases.Os16CaseGActivity
+import com.example.os17demo.os16cases.Os16CaseHActivity
+import com.example.os17demo.os16cases.Os16CaseIActivity
+import com.example.os17demo.os16cases.Os16CaseJActivity
+import com.example.os17demo.os16cases.Os16CaseKActivity
+import com.example.os17demo.os16cases.Os16CaseLActivity
+import com.example.os17demo.os16cases.Os16CaseMActivity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -90,19 +99,19 @@ class MainActivity : AppCompatActivity() {
         addDemoButton(container, "14) 后台音频强化") { demoBackgroundAudioHardening() }
 
         addSectionTitle(container, "Android 16 变更示例")
-        addDemoButton(container, "16A) Job/调度行为变更（配额+空作业+固定频率）") { demo16JobAndSchedulerChanges() }
-        addDemoButton(container, "16B) 有序广播优先级范围不再全局") { demo16OrderedBroadcastPriority() }
-        addDemoButton(container, "16C) ART 内部变更与非 SDK 访问治理") { demo16ArtChanges() }
-        addDemoButton(container, "16D) 16KB 页面大小兼容模式") { demo16PageSizeCompatMode() }
-        addDemoButton(container, "16E) 无障碍公告弃用（announceForAccessibility）") { demo16DisruptiveA11y() }
-        addDemoButton(container, "16F) 预测性返回/三按钮返回迁移") { demo16PredictiveBackMigration() }
-        addDemoButton(container, "16G) 无边框与大屏自适应布局") { demo16EdgeToEdgeAndAdaptiveLayout() }
-        addDemoButton(container, "16H) themed icon 与 elegantTextHeight 变更") { demo16ThemedIconAndElegantText() }
-        addDemoButton(container, "16I) Intent 安全、MediaStore 版本锁定、GPU 过滤") { demo16SecurityIntentsMediaGpu() }
-        addDemoButton(container, "16J) 蓝牙绑定丢失、超时与 removeBond API") { demo16BluetoothAndCompanionChanges() }
-        addDemoButton(container, "16K) 健康权限与本地网络权限") { demo16HealthAndLocalNetworkPermissions() }
-        addDemoButton(container, "16L) 应用拥有的照片（受限媒体访问）") { demo16OwnedPhotos() }
-        addDemoButton(container, "16M) 虚拟设备所有者替换项") { demo16VirtualDeviceOwnerOverrides() }
+        addNavigationButton(container, "16A) Job/调度行为变更（独立页面）", Os16CaseAActivity::class.java)
+        addNavigationButton(container, "16B) 有序广播优先级范围（独立页面）", Os16CaseBActivity::class.java)
+        addNavigationButton(container, "16C) ART 内部变更治理（独立页面）", Os16CaseCActivity::class.java)
+        addNavigationButton(container, "16D) 16KB 页面大小兼容（独立页面）", Os16CaseDActivity::class.java)
+        addNavigationButton(container, "16E) 无障碍公告弃用（独立页面）", Os16CaseEActivity::class.java)
+        addNavigationButton(container, "16F) 预测性返回迁移（独立页面）", Os16CaseFActivity::class.java)
+        addNavigationButton(container, "16G) 无边框与自适应布局（独立页面）", Os16CaseGActivity::class.java)
+        addNavigationButton(container, "16H) icon/elegantTextHeight（独立页面）", Os16CaseHActivity::class.java)
+        addNavigationButton(container, "16I) Intent/MediaStore/GPU（独立页面）", Os16CaseIActivity::class.java)
+        addNavigationButton(container, "16J) 蓝牙/CDM 变更（独立页面）", Os16CaseJActivity::class.java)
+        addNavigationButton(container, "16K) 健康与本地网络权限（独立页面）", Os16CaseKActivity::class.java)
+        addNavigationButton(container, "16L) 应用拥有的照片（独立页面）", Os16CaseLActivity::class.java)
+        addNavigationButton(container, "16M) 虚拟设备所有者（独立页面）", Os16CaseMActivity::class.java)
         addDemoButton(container, "清空输出") { outputView.text = "" }
 
         outputView = TextView(this).apply {
@@ -132,6 +141,16 @@ class MainActivity : AppCompatActivity() {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ),
         )
+    }
+
+    private fun addNavigationButton(
+        container: LinearLayout,
+        title: String,
+        targetActivity: Class<*>,
+    ) {
+        addDemoButton(container, title) {
+            startActivity(Intent(this, targetActivity))
+        }
     }
 
     private fun addSectionTitle(container: LinearLayout, text: String) {
@@ -405,167 +424,6 @@ class MainActivity : AppCompatActivity() {
         appendLine(
             "AudioFocus 请求结果: $focusResult\n" +
                 "Android 17 对后台音频调用更严格，后台请求可能失败或静默不生效，需前台可见态触发。",
-        )
-    }
-
-    private fun demo16JobAndSchedulerChanges() {
-        appendLine(
-            buildString {
-                append("Android 16 调度相关变更:\n")
-                append("1) JobScheduler 配额更严格，前台服务并行执行作业也会计入配额。\n")
-                append("2) 空作业被放弃时，会出现明确 stop reason，需在 WorkInfo.getStopReason()/JobParameters.getStopReason() 里兜底。\n")
-                append("3) target 16 后 scheduleAtFixedRate 补偿执行最多只会立即补 1 次。\n")
-                append("示例修改：把用户主动触发的上传下载从普通 Job 切到 user-initiated data transfer job，")
-                append("并在 stop reason=timeout/abandoned 时做幂等重试。")
-            },
-        )
-    }
-
-    private fun demo16OrderedBroadcastPriority() {
-        appendLine(
-            "Android 16 起有序广播优先级不再是跨进程全局排序。\n" +
-                "示例修改：不要依赖“高优先级抢占”业务链路，改为显式组件/前台服务/应用内事件总线。",
-        )
-    }
-
-    private fun demo16ArtChanges() {
-        val strictModeMethod = runCatching {
-            Class.forName("android.os.StrictMode\$VmPolicy\$Builder")
-                .getMethod("detectNonSdkApiUsage")
-        }.isSuccess
-        appendLine(
-            buildString {
-                append("ART 内部变更：依赖 ART/非 SDK 内部结构的代码风险升高。\n")
-                append("detectNonSdkApiUsage 可用: $strictModeMethod\n")
-                append("示例修改：启用 StrictMode 非 SDK 检测 + 升级三方 SDK，移除反射调用内部 API。")
-            },
-        )
-    }
-
-    private fun demo16PageSizeCompatMode() {
-        val pageSize = runCatching { Os.sysconf(OsConstants._SC_PAGESIZE) }.getOrNull()
-        appendLine(
-            buildString {
-                append("当前系统页大小: ${pageSize ?: "unknown"} bytes\n")
-                append("Android 16 引入 16KB 页大小兼容模式。\n")
-                append("示例修改：检查 native so 是否按 16KB 对齐构建，避免仅假设 4KB 页大小。")
-            },
-        )
-    }
-
-    private fun demo16DisruptiveA11y() {
-        appendLine(
-            "Android 16 废弃干扰性无障碍公告（announceForAccessibility/TYPE_ANNOUNCEMENT）。\n" +
-                "示例修改：关键 UI 变化改用 setAccessibilityPaneTitle / LiveRegion / 语义化节点更新。",
-        )
-    }
-
-    private fun demo16PredictiveBackMigration() {
-        val onBackInvokedAvailable = runCatching {
-            Class.forName("android.window.OnBackInvokedDispatcher")
-        }.isSuccess
-        appendLine(
-            buildString {
-                append("OnBackInvokedDispatcher 可用: $onBackInvokedAvailable\n")
-                append("Android 16 target 下系统默认启用预测性返回，onBackPressed/KEYCODE_BACK 依赖会失效。\n")
-                append("示例修改：迁移到 OnBackInvokedCallback/AndroidX 返回导航；")
-                append("仅作为临时过渡时在 manifest 设置 enableOnBackInvokedCallback=false。")
-            },
-        )
-    }
-
-    private fun demo16EdgeToEdgeAndAdaptiveLayout() {
-        val swDp = resources.configuration.smallestScreenWidthDp
-        val attrId = resources.getIdentifier("windowOptOutEdgeToEdgeEnforcement", "attr", "android")
-        appendLine(
-            buildString {
-                append("smallestScreenWidthDp=$swDp\n")
-                append("windowOptOutEdgeToEdgeEnforcement attr id=$attrId\n")
-                append("Android 16 target 下 edge-to-edge 选择停用即将失效，且大屏不再尊重方向/宽高比限制。\n")
-                append("示例修改：统一使用 WindowInsets + 响应式布局（折叠屏/平板/桌面窗口）。")
-            },
-        )
-    }
-
-    private fun demo16ThemedIconAndElegantText() {
-        @Suppress("DEPRECATION")
-        val elegantNow = imeDemoInput.isElegantTextHeight
-        appendLine(
-            buildString {
-                append("当前 TextView elegantTextHeight=$elegantNow\n")
-                append("Android 16 弃用并停用 elegantTextHeight 控制路径；请验证多语言字体渲染。\n")
-                append("此外系统会自动主题化应用图标，建议提供 monochrome layer 以获得稳定视觉。")
-            },
-        )
-    }
-
-    private fun demo16SecurityIntentsMediaGpu() {
-        val mediaVersion = runCatching { MediaStore.getVersion(this) }.getOrNull()
-        appendLine(
-            buildString {
-                append("MediaStore.getVersion()=${mediaVersion ?: "unavailable"}\n")
-                append("Android 16 安全相关：\n")
-                append("- 更强 Intent 重定向防护（默认强化）\n")
-                append("- 更安全的 intent（接收方可在清单选择更严格解析）\n")
-                append("- MediaStore 版本变为按应用唯一，避免指纹识别\n")
-                append("- Mali GPU 某些 ioctl 在正式版被过滤\n")
-                append("示例修改：为跨应用 intent 全量做 action/data/category 校验，避免隐式匹配假设。")
-            },
-        )
-    }
-
-    private fun demo16BluetoothAndCompanionChanges() {
-        val keyMissingIntent = "android.bluetooth.device.action.KEY_MISSING"
-        val encryptionChangeIntent = "android.bluetooth.device.action.ENCRYPTION_CHANGE"
-        val removeBondMethod = runCatching {
-            Class.forName("android.companion.CompanionDeviceManager")
-                .methods
-                .any { it.name == "removeBond" }
-        }.getOrDefault(false)
-        appendLine(
-            buildString {
-                append("ACTION_KEY_MISSING=$keyMissingIntent\n")
-                append("ACTION_ENCRYPTION_CHANGE=$encryptionChangeIntent\n")
-                append("CompanionDeviceManager.removeBond 可用: $removeBondMethod\n")
-                append("Android 16 对发现超时与绑定丢失处理策略已调整，建议应用以系统对话框结果为准，")
-                append("并监听 ACTION_BOND_STATE_CHANGED 做状态同步。")
-            },
-        )
-    }
-
-    private fun demo16HealthAndLocalNetworkPermissions() {
-        val bodySensorsGranted =
-            packageManager.checkPermission(Manifest.permission.BODY_SENSORS, packageName) == PackageManager.PERMISSION_GRANTED
-        val localNetworkPermission = "android.permission.LOCAL_NETWORK"
-        val localNetworkGranted =
-            packageManager.checkPermission(localNetworkPermission, packageName) == PackageManager.PERMISSION_GRANTED
-        appendLine(
-            buildString {
-                append("BODY_SENSORS 已授权: $bodySensorsGranted\n")
-                append("LOCAL_NETWORK 已授权: $localNetworkGranted\n")
-                append("Android 16 target 下健康权限逐步细粒度化（android.permission.health.*）；")
-                append("本地网络访问进入运行时授权路线，需处理拒绝/撤销分支。")
-            },
-        )
-    }
-
-    private fun demo16OwnedPhotos() {
-        val selectedMediaPerm = "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
-        val granted =
-            packageManager.checkPermission(selectedMediaPerm, packageName) == PackageManager.PERMISSION_GRANTED
-        appendLine(
-            buildString {
-                append("READ_MEDIA_VISUAL_USER_SELECTED 已授权: $granted\n")
-                append("Android 16 target 下，用户选择“仅限部分照片/视频”时，应用拥有的媒体会在选择器中预选。\n")
-                append("示例修改：每次进入媒体流程都基于最新授权集合读取，不缓存长期可见性。")
-            },
-        )
-    }
-
-    private fun demo16VirtualDeviceOwnerOverrides() {
-        appendLine(
-            "Android 16 在虚拟设备所有者投屏场景引入额外系统行为替换。\n" +
-                "示例修改：多显示设备场景避免硬编码输入/方向假设，按 displayId 和窗口上下文动态适配。",
         )
     }
 
